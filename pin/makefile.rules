@@ -17,7 +17,7 @@
 # This defines tests which run tools of the same name.  This is simply for convenience to avoid
 # defining the test name twice (once in TOOL_ROOTS and again in TEST_ROOTS).
 # Tests defined here should not be defined in TOOL_ROOTS and TEST_ROOTS.
-TEST_TOOL_ROOTS := pincachesim
+TEST_TOOL_ROOTS := 
 
 # This defines the tests to be run that were not already defined in TEST_TOOL_ROOTS.
 TEST_ROOTS :=
@@ -47,23 +47,12 @@ APP_ROOTS :=
 OBJECT_ROOTS :=
 
 # This defines any additional dlls (shared objects), other than the pintools, that need to be compiled.
-DLL_ROOTS := 
-
-PINPLAY_HOME=$(PIN_ROOT)/extras/pinplay/
-PINPLAY_INCLUDE_HOME=$(PINPLAY_HOME)/include
-PINPLAY_LIB_HOME=$(PINPLAY_HOME)/lib/intel64
-EXT_LIB_HOME=$(PINPLAY_HOME)/lib-ext/intel64
+DLL_ROOTS :=
 
 # This defines any static libraries (archives), that need to be built.
-# LIB_ROOTS := $(PINPLAY_LIB_HOME)/libpinplay.a $(EXT_LIB_HOME)/libbz2.a $(EXT_LIB_HOME)/libz.a
-
-#NOTE: pinplay's libraries must be linked before pin's library.
-#I haven't yet found how to do that, so as a workaround I manually link pin again after linking pinplay's libs
-#This is a hack and should be changed ASAP.
+LIB_ROOTS :=
 
 
-TOOL_LIBS += -L$(PINPLAY_LIB_HOME) -L$(EXT_LIB_HOME) -lpinplay -lbz2 -lz $(CONTROLLERLIB) -lpin
-TOOL_CXXFLAGS += -I$(PINPLAY_INCLUDE_HOME) -std=c++11
 ##############################################################
 #
 # Test recipes
@@ -83,3 +72,33 @@ TOOL_CXXFLAGS += -I$(PINPLAY_INCLUDE_HOME) -std=c++11
 
 # This section contains the build rules for all binaries that have special build rules.
 # See makefile.default.rules for the default build rules.
+
+PINPLAY_HOME=$(PIN_ROOT)/extras/pinplay/
+PINPLAY_INCLUDE_HOME=$(PINPLAY_HOME)/include
+PINPLAY_LIB_HOME=$(PINPLAY_HOME)/lib/$(TARGET)
+EXT_LIB_HOME=$(PINPLAY_HOME)/lib-ext/$(TARGET)
+
+
+TOOL_CXXFLAGS += -std=c++11 -I$(PINPLAY_INCLUDE_HOME)
+TOOL_LIBS += $(PINPLAY_LIB_HOME)/libpinplay.a $(EXT_LIB_HOME)/libbz2.a  $(EXT_LIB_HOME)/libz.a  $(CONTROLLERLIB) -lpin
+
+all: $(OBJDIR)pincachesim$(PINTOOL_SUFFIX)
+
+$(OBJDIR)LRUCache$(OBJ_SUFFIX): ../LRUCache.cpp ../LRUCache.h
+	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
+
+$(OBJDIR)CacheToolbox$(OBJ_SUFFIX): ../CacheToolbox.cpp ../CacheToolbox.h
+	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
+
+$(OBJDIR)pincachesim$(OBJ_SUFFIX): pincachesim.cpp
+	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
+
+$(OBJDIR)pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)CacheToolbox$(OBJ_SUFFIX) $(OBJDIR)pincachesim$(OBJ_SUFFIX)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $(^:%.h=) $(TOOL_LPATHS) $(TOOL_LIBS)
+
+
+##############################################################
+#
+# TESTSCRIPTS
+#
+##############################################################
