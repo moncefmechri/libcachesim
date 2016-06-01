@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "CacheToolbox.h"
 
 CacheConfig::CacheConfig(unsigned size, unsigned associativity, unsigned cache_line_size) : size(size), assoc(associativity), cache_line_size(cache_line_size)
