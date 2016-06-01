@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../LRUCache.h"
-
+#include "../CacheToolbox.h" //addr_t
 #include "pin.H"
 #include "pinplay.H"
 
@@ -15,6 +15,7 @@ KNOB<BOOL> KnobPinPlayReplayer(KNOB_MODE_WRITEONCE,
 
 using namespace std;
 
+LRUCache cache(32768, 64, 64);
 uint64_t accesses = 0;
 uint64_t hits = 0;
 uint64_t misses = 0;
@@ -22,11 +23,19 @@ uint64_t misses = 0;
 void mem_access(void* address)
 {
     ++accesses;
+    const bool cache_hit = cache.access((addr_t) address);
+
+    if (cache_hit)
+        ++hits;
+    else
+        ++misses;
 }
 
 void fini(int code, void* v)
 {
     cout << "Accesses: " << accesses << endl;
+    cout << "Hits: " << hits << endl;
+    cout << "Misses: " << misses << " ( " << misses / (float) accesses * 100 << "% of all accesses)" << endl;
 }
 
 void instruction(INS ins, void* v)
@@ -37,13 +46,13 @@ void instruction(INS ins, void* v)
     {
         if (INS_MemoryOperandIsRead(ins, mem_op))
         {
-            INS_InsertPredicatedCall(ins, IPOINT_BEFORE, (AFUNPTR) mem_access, IARG_INST_PTR, IARG_MEMORYOP_EA, mem_op, IARG_END);
+            INS_InsertPredicatedCall(ins, IPOINT_BEFORE, (AFUNPTR) mem_access, IARG_MEMORYOP_EA, mem_op, IARG_END);
         }
         
         //An instruction could both read and write memory so we always test for both
         if (INS_MemoryOperandIsWritten(ins, mem_op))
         {
-            INS_InsertPredicatedCall(ins, IPOINT_BEFORE, (AFUNPTR) mem_access, IARG_INST_PTR, IARG_MEMORYOP_EA, mem_op, IARG_END);
+            INS_InsertPredicatedCall(ins, IPOINT_BEFORE, (AFUNPTR) mem_access, IARG_MEMORYOP_EA, mem_op, IARG_END);
         }
     }
 }
