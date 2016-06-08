@@ -103,6 +103,7 @@ $(OBJDIR)pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)C
 	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $(^:%.h=) $(TOOL_LPATHS) $(TOOL_LIBS)
 
 $(OBJDIR)exclusive-pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)CacheToolbox$(OBJ_SUFFIX) $(OBJDIR)ExclusiveHierarchy$(OBJ_SUFFIX) $(OBJDIR)exclusive-pincachesim$(OBJ_SUFFIX)
+	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $(^:%.h=) $(TOOL_LPATHS) $(TOOL_LIBS)
 ##############################################################
 #
 # TESTSCRIPTS
