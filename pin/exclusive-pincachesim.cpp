@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 
 #include "../ExclusiveHierarchy.h"
 #include "../CacheToolbox.h" //CacheConfig, addr_t
@@ -13,9 +14,14 @@ KNOB<BOOL> KnobPinPlayReplayer(KNOB_MODE_WRITEONCE,
                       "pintool", "replay", "0",
                       "Activate the pinplay replayer");
 
+KNOB<unsigned> KnobL1Size(KNOB_MODE_WRITEONCE, "pintool", "L1-size", "", "L1 size");
+KNOB<unsigned> KnobL2Size(KNOB_MODE_WRITEONCE, "pintool", "L2-size", "", "L2 size");
+KNOB<unsigned> KnobAssoc(KNOB_MODE_WRITEONCE, "pintool", "a", "64", "Associativity");
+
 using namespace std;
 
-ExclusiveHierarchy cache(CacheConfig(32768, 64, 64), CacheConfig(65536, 64, 64));
+unique_ptr<ExclusiveHierarchy> cache;
+
 uint64_t accesses = 0;
 uint64_t L1_hits = 0;
 uint64_t L1_misses = 0;
@@ -25,7 +31,7 @@ uint64_t L2_misses = 0;
 void mem_access(void* address)
 {
     ++accesses;
-    const ExclusiveHierarchy::ACCESS_STATUS access_status = cache.access((addr_t) address);
+    const ExclusiveHierarchy::ACCESS_STATUS access_status = cache->access((addr_t) address);
 
     switch (access_status)
     {
@@ -83,6 +89,14 @@ int main(int argc, char** argv)
 
     INS_AddInstrumentFunction(instruction, 0);
     PIN_AddFiniFunction(fini, 0);
+
+    const unsigned L1_size = KnobL1Size.Value();
+    const unsigned L2_size = KnobL2Size.Value();
+
+    if (L1_size == 0 || L2_size == 0)
+        throw runtime_error("L1 and L2 sizes must be specified, and greater than 0");
+
+    cache.reset(new ExclusiveHierarchy(CacheConfig(L1_size, KnobAssoc.Value(), 64), CacheConfig(L2_size, KnobAssoc.Value(), 64)));
 
     PIN_StartProgram();
 }
