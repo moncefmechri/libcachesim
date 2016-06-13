@@ -13,7 +13,7 @@ class ExclusiveHierarchy
     std::vector<LRUSet> L1_cache;
     std::vector<LRUSet> L2_cache;
 
-
+    std::vector<LRUCacheLine>::iterator find_victim(LRUSet& set) const;
 public:
     enum class ACCESS_STATUS {L1_HIT, L1_MISS_L2_HIT, L1_MISS_L2_MISS};
 
