@@ -58,6 +58,7 @@ bool LRUCache::access(addr_t address)
     return false;
 }
 
+
 std::vector<LRUCacheLine>::iterator find_LRU_victim(LRUSet& set)
 {
     auto victim = set.lines.end();

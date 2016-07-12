@@ -23,6 +23,7 @@ class LRUCache
     CacheConfig config;
     std::vector<LRUSet> cache;
 
+    friend class ExclusiveCache;
 public:
 
     LRUCache(const CacheConfig& config);

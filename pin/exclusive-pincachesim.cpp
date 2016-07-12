@@ -20,7 +20,7 @@ KNOB<unsigned> KnobAssoc(KNOB_MODE_WRITEONCE, "pintool", "a", "64", "Associativi
 
 using namespace std;
 
-unique_ptr<ExclusiveHierarchy> cache;
+unique_ptr<SimpleExclusiveHierarchy> cache;
 
 uint64_t accesses = 0;
 uint64_t L1_hits = 0;
@@ -31,18 +31,18 @@ uint64_t L2_misses = 0;
 void mem_access(void* address)
 {
     ++accesses;
-    const ExclusiveHierarchy::ACCESS_STATUS access_status = cache->access((addr_t) address);
+    const ExclusiveCache::ACCESS_STATUS access_status = cache->access((addr_t) address);
 
     switch (access_status)
     {
-        case ExclusiveHierarchy::ACCESS_STATUS::L1_HIT:
+        case ExclusiveCache::ACCESS_STATUS::L1_HIT:
             ++L1_hits;
             break;
-        case ExclusiveHierarchy::ACCESS_STATUS::L1_MISS_L2_HIT:
+        case ExclusiveCache::ACCESS_STATUS::L1_MISS_L2_HIT:
             ++L1_misses;
             ++L2_hits;
             break;
-        case ExclusiveHierarchy::ACCESS_STATUS::L1_MISS_L2_MISS:
+        case ExclusiveCache::ACCESS_STATUS::L1_MISS_L2_MISS:
             ++L1_misses;
             ++L2_misses;
             break;
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     if (L1_size == 0 || L2_size == 0)
         throw runtime_error("L1 and L2 sizes must be specified, and greater than 0");
 
-    cache.reset(new ExclusiveHierarchy(CacheConfig(L1_size, KnobAssoc.Value(), 64), CacheConfig(L2_size, KnobAssoc.Value(), 64)));
+    cache.reset(new SimpleExclusiveHierarchy(CacheConfig(L1_size, KnobAssoc.Value(), 64), CacheConfig(L2_size, KnobAssoc.Value(), 64)));
 
     PIN_StartProgram();
 }
