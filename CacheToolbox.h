@@ -68,3 +68,9 @@ addr_t get_set_index(addr_t addr, unsigned index_shift, size_t index_size);
 addr_t get_set_index(addr_t addr, const CacheConfig& config);
 addr_t get_tag(addr_t addr, unsigned tag_shift, size_t tag_size);
 addr_t get_tag(addr_t addr, const CacheConfig& config);
+
+class CacheStats
+{
+    uint64_t accesses;
+    uint64_t misses;
+};
