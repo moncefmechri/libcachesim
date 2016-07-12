@@ -9,7 +9,7 @@
 struct LRUCacheLine
 {
     addr_t tag;
-    unsigned time;
+    age_t time;
 };
 
 struct LRUSet
