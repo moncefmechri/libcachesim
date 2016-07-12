@@ -7,6 +7,7 @@
 #include <cmath>
 
 typedef uint64_t addr_t;
+typedef uint64_t age_t;
 
 template <typename T>
 bool is_power_of_2(const T& value)

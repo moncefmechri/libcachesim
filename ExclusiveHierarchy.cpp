@@ -40,7 +40,7 @@ ExclusiveHierarchy::ACCESS_STATUS ExclusiveHierarchy::access(addr_t address)
 
     LRUSet& L1_set = L1_cache[L1_set_index];
 
-    unsigned L1_min_age = std::numeric_limits<unsigned>::max();
+    age_t L1_min_age = std::numeric_limits<age_t>::max();
 
     auto L1_victim = L1_set.lines.end();
 
@@ -106,7 +106,7 @@ ExclusiveHierarchy::ACCESS_STATUS ExclusiveHierarchy::access(addr_t address)
 std::vector<LRUCacheLine>::iterator ExclusiveHierarchy::find_victim(LRUSet& set) const
 {
     auto victim = set.lines.end();
-    unsigned min_age = std::numeric_limits<unsigned>::max();
+    age_t min_age = std::numeric_limits<age_t>::max();
 
     for (auto way = set.lines.begin(); way < set.lines.end(); ++way)
     {

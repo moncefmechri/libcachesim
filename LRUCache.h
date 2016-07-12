@@ -15,7 +15,7 @@ struct LRUCacheLine
 struct LRUSet
 {
     std::vector<LRUCacheLine> lines;
-    unsigned max_age;
+    age_t max_age;
 };
 
 class LRUCache

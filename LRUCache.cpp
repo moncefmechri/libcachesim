@@ -28,7 +28,7 @@ bool LRUCache::access(addr_t address)
 
     LRUSet& set = cache[set_index];
 
-    unsigned min_age = std::numeric_limits<unsigned>::max();
+    age_t min_age = std::numeric_limits<age_t>::max();
 
     auto victim = set.lines.end();
     for (auto way = set.lines.begin(); way != set.lines.end(); ++way)
