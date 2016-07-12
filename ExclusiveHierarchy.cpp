@@ -91,7 +91,7 @@ ExclusiveHierarchy::ACCESS_STATUS ExclusiveHierarchy::access(addr_t address)
     {
         const addr_t L2_victim_set_index = get_set_index(L1_victim->tag, L2_config);
         LRUSet& L2_victim_set = L2_cache[L2_victim_set_index];
-        auto L2_victim = find_victim(L2_victim_set);
+        auto L2_victim = find_LRU_victim(L2_victim_set);
         L2_victim->tag = get_tag(L1_victim->tag, L2_config);
         L2_victim->time = ++L2_victim_set.max_age;
     }
@@ -101,20 +101,4 @@ ExclusiveHierarchy::ACCESS_STATUS ExclusiveHierarchy::access(addr_t address)
     L1_victim->time = ++L1_set.max_age;
 
     return L2_hit ? ACCESS_STATUS::L1_MISS_L2_HIT : ACCESS_STATUS::L1_MISS_L2_MISS;
-}
-
-std::vector<LRUCacheLine>::iterator ExclusiveHierarchy::find_victim(LRUSet& set) const
-{
-    auto victim = set.lines.end();
-    age_t min_age = std::numeric_limits<age_t>::max();
-
-    for (auto way = set.lines.begin(); way < set.lines.end(); ++way)
-    {
-        if (way->time < min_age)
-        {
-            victim = way;
-            min_age = victim->time;
-        }
-    }
-    return victim;
 }

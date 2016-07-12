@@ -1,6 +1,7 @@
 #include <limits>
-#include "CacheToolbox.h"
+#include <vector>
 
+#include "CacheToolbox.h"
 #include "LRUCache.h"
 
 
@@ -55,4 +56,20 @@ bool LRUCache::access(addr_t address)
     victim->time = ++set.max_age;
 
     return false;
+}
+
+std::vector<LRUCacheLine>::iterator find_LRU_victim(LRUSet& set)
+{
+    auto victim = set.lines.end();
+    age_t min_age = std::numeric_limits<age_t>::max();
+
+    for (auto way = set.lines.begin(); way < set.lines.end(); ++way)
+    {
+        if (way->time < min_age)
+        {
+            victim = way;
+            min_age = victim->time;
+        }
+    }
+    return victim;
 }

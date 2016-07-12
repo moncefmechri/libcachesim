@@ -30,3 +30,6 @@ public:
 
     bool access(addr_t address);
 };
+
+//Given an LRU set, return the victim that will be chosen next for eviction
+std::vector<LRUCacheLine>::iterator find_LRU_victim(LRUSet& set);
