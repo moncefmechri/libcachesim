@@ -15,7 +15,7 @@ KNOB<BOOL> KnobPinPlayReplayer(KNOB_MODE_WRITEONCE,
 
 using namespace std;
 
-LRUCache cache(32768, 64, 64);
+SimpleLRUCache cache(32768, 64, 64);
 uint64_t accesses = 0;
 uint64_t hits = 0;
 uint64_t misses = 0;
