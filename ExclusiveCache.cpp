@@ -1,7 +1,7 @@
 #include <limits>
 
-
 #include "ExclusiveCache.h"
+#include "LRUCache.h"
 
 ExclusiveCache::ExclusiveCache(const CacheConfig& L2_config) : L2_config(L2_config)
 {
@@ -14,19 +14,19 @@ ExclusiveCache::ExclusiveCache(const CacheConfig& L2_config) : L2_config(L2_conf
     }
 }
 
-ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUCache& L1_cache, unsigned tid)
+ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUInternals& L1_cache_internals, unsigned tid)
 {
     /* WARNING: For now, only the entire address is stored (in the way->tag field), which means the
     * tag needs to be recomputed for each way, for each L2 access. This can be optimized
     * by storing both the address and tag in separate fields */
 
     //Do we need to align the address?
-    const addr_t aligned_address = align_on_cache_line_size(address, L1_cache.config.get_cache_line_size());
+    const addr_t aligned_address = align_on_cache_line_size(address, L1_cache_internals.config.get_cache_line_size());
 
-    const addr_t L1_set_index = get_set_index(aligned_address, L1_cache.config);
-    const addr_t L1_tag = get_tag(aligned_address, L1_cache.config);
+    const addr_t L1_set_index = get_set_index(aligned_address, L1_cache_internals.config);
+    const addr_t L1_tag = get_tag(aligned_address, L1_cache_internals.config);
 
-    LRUSet& L1_set = L1_cache.cache[L1_set_index];
+    LRUSet& L1_set = L1_cache_internals.cache[L1_set_index];
 
     age_t L1_min_age = std::numeric_limits<age_t>::max();
 
@@ -35,7 +35,7 @@ ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUCache& L
     for (auto way = L1_set.lines.begin(); way < L1_set.lines.end(); ++way)
     {
         //L1 hit
-        if (get_tag(way->tag, L1_cache.config) == L1_tag && way->time != TIME_INVALID)
+        if (get_tag(way->tag, L1_cache_internals.config) == L1_tag && way->time != TIME_INVALID)
         {
             way->time = ++L1_set.max_age;
             return ACCESS_STATUS::L1_HIT;

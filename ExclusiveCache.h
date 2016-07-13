@@ -5,6 +5,8 @@
 #include "CacheToolbox.h"
 #include "LRUCache.h"
 
+/* This class represents the L2 cache of an exclusive cache hierarchy and is meant as a building block
+ * to build exclusive cache hierarchies. See the class SimpleExclusiveHierarchy for an example */
 class ExclusiveCache
 {
     CacheConfig L2_config;
@@ -15,6 +17,6 @@ public:
 
     ExclusiveCache(const CacheConfig& L2_config);
 
-    ACCESS_STATUS access(addr_t address, LRUCache& L1_cache, unsigned tid);
+    ACCESS_STATUS access(addr_t address, LRUInternals& L1_cache_internals, unsigned tid);
 };
 

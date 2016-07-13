@@ -18,16 +18,22 @@ struct LRUSet
     age_t max_age;
 };
 
-class LRUCache
+struct LRUInternals
 {
     CacheConfig config;
     std::vector<LRUSet> cache;
 
-    friend class ExclusiveCache;
+    LRUInternals(const CacheConfig& config);
+    LRUInternals(unsigned size, unsigned associativity, unsigned cache_line_size);
+};
+
+class SimpleLRUCache
+{
+    LRUInternals internals;
 public:
 
-    LRUCache(const CacheConfig& config);
-    LRUCache(unsigned size, unsigned associativity, unsigned cache_line_size);
+    SimpleLRUCache(const CacheConfig& config);
+    SimpleLRUCache(unsigned size, unsigned associativity, unsigned cache_line_size);
 
     bool access(addr_t address);
 };

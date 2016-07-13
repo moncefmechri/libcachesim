@@ -4,8 +4,7 @@
 #include "CacheToolbox.h"
 #include "LRUCache.h"
 
-
-LRUCache::LRUCache(const CacheConfig& config) : config(config)
+LRUInternals::LRUInternals(const CacheConfig& config) : config(config)
 {
     cache.resize(config.get_nb_sets());
 
@@ -16,18 +15,24 @@ LRUCache::LRUCache(const CacheConfig& config) : config(config)
     }
 }
 
-LRUCache::LRUCache(unsigned int size, unsigned int associativity, unsigned int cache_line_size)
-    : LRUCache(CacheConfig(size, associativity, cache_line_size)) {}
+LRUInternals::LRUInternals(unsigned int size, unsigned int associativity, unsigned int cache_line_size)
+    : LRUInternals(CacheConfig(size, associativity, cache_line_size)) {}
 
-bool LRUCache::access(addr_t address)
+SimpleLRUCache::SimpleLRUCache(const CacheConfig& config) : internals(config)
+{}
+
+SimpleLRUCache::SimpleLRUCache(unsigned int size, unsigned int associativity, unsigned int cache_line_size)
+    : SimpleLRUCache(CacheConfig(size, associativity, cache_line_size)) {}
+
+bool SimpleLRUCache::access(addr_t address)
 {
     //Do we need to align the address?
-    const addr_t aligned_address = align_on_cache_line_size(address, config.get_cache_line_size());
+    const addr_t aligned_address = align_on_cache_line_size(address, internals.config.get_cache_line_size());
 
-    const addr_t set_index = get_set_index(aligned_address, config);
-    const addr_t tag = get_tag(aligned_address, config);
+    const addr_t set_index = get_set_index(aligned_address, internals.config);
+    const addr_t tag = get_tag(aligned_address, internals.config);
 
-    LRUSet& set = cache[set_index];
+    LRUSet& set = internals.cache[set_index];
 
     age_t min_age = std::numeric_limits<age_t>::max();
 
