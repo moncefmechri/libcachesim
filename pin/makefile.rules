@@ -90,6 +90,9 @@ $(OBJDIR)LRUCache$(OBJ_SUFFIX): ../LRUCache.cpp ../LRUCache.h
 $(OBJDIR)CacheToolbox$(OBJ_SUFFIX): ../CacheToolbox.cpp ../CacheToolbox.h
 	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
 
+$(OBJDIR)ExclusiveCache$(OBJ_SUFFIX): ../ExclusiveCache.cpp ../ExclusiveCache.h
+	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
+
 $(OBJDIR)ExclusiveHierarchy$(OBJ_SUFFIX): ../ExclusiveHierarchy.cpp ../ExclusiveHierarchy.h
 	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
 
@@ -102,7 +105,7 @@ $(OBJDIR)exclusive-pincachesim$(OBJ_SUFFIX): exclusive-pincachesim.cpp
 $(OBJDIR)pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)CacheToolbox$(OBJ_SUFFIX) $(OBJDIR)pincachesim$(OBJ_SUFFIX)
 	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $(^:%.h=) $(TOOL_LPATHS) $(TOOL_LIBS)
 
-$(OBJDIR)exclusive-pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)CacheToolbox$(OBJ_SUFFIX) $(OBJDIR)ExclusiveHierarchy$(OBJ_SUFFIX) $(OBJDIR)exclusive-pincachesim$(OBJ_SUFFIX)
+$(OBJDIR)exclusive-pincachesim$(PINTOOL_SUFFIX): $(OBJDIR)LRUCache$(OBJ_SUFFIX) $(OBJDIR)CacheToolbox$(OBJ_SUFFIX) $(OBJDIR)ExclusiveCache$(OBJ_SUFFIX) $(OBJDIR)ExclusiveHierarchy$(OBJ_SUFFIX) $(OBJDIR)exclusive-pincachesim$(OBJ_SUFFIX)
 	$(LINKER) $(TOOL_LDFLAGS) $(LINK_EXE)$@ $(^:%.h=) $(TOOL_LPATHS) $(TOOL_LIBS)
 ##############################################################
 #
