@@ -11,6 +11,13 @@ ExclusiveCache::ExclusiveCache(const CacheConfig& L2_config) : L2_config(L2_conf
     {
         set.lines.resize(L2_config.get_associativity());
         set.max_age = 0;
+
+        for (auto& line : set.lines)
+        {
+            line.tag = 0;
+            line.time = TIME_INVALID;
+            line.tid = 0;
+        }
     }
 }
 
@@ -34,9 +41,8 @@ ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUInternal
 
     for (auto way = L1_set.lines.begin(); way < L1_set.lines.end(); ++way)
     {
-        //L1 hit
-        if (get_tag(way->tag, L1_cache_internals.config) == L1_tag && way->time != TIME_INVALID)
-        {
+        if (get_tag(way->tag, L1_cache_internals.config) == L1_tag && way->time != TIME_INVALID && way->tid == tid)
+        {//L1 hit
             way->time = ++L1_set.max_age;
             return ACCESS_STATUS::L1_HIT;
         }
@@ -61,7 +67,7 @@ ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUInternal
     for (auto way = L2_set.lines.begin(); way < L2_set.lines.end() && !L2_hit; ++way)
     {
         //L2 hit
-        if (way->tag == L2_tag && way->time != TIME_INVALID)
+        if (way->tag == L2_tag && way->time != TIME_INVALID && way->tid == tid)
         {
             /* invalidate immediately the L2 entry. Important to do it first, so that this entry
              * can potentially be reused immediately (this happen only if the L1 victim belongs to this set,
@@ -82,11 +88,13 @@ ExclusiveCache::ACCESS_STATUS ExclusiveCache::access(addr_t address, LRUInternal
         auto L2_victim = find_LRU_victim(L2_victim_set);
         L2_victim->tag = get_tag(L1_victim->tag, L2_config);
         L2_victim->time = ++L2_victim_set.max_age;
+        L2_victim->tid = L1_victim->tid;
     }
 
     //Install the new line in L1
     L1_victim->tag = aligned_address;
     L1_victim->time = ++L1_set.max_age;
+    L1_victim->tid = tid;
 
     return L2_hit ? ACCESS_STATUS::L1_MISS_L2_HIT : ACCESS_STATUS::L1_MISS_L2_MISS;
 }

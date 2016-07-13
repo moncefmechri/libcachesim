@@ -10,8 +10,15 @@ LRUInternals::LRUInternals(const CacheConfig& config) : config(config)
 
     for (auto& set: cache)
     {
-        set.lines.resize(config.get_associativity());//TODO: init the lines
+        set.lines.resize(config.get_associativity());
         set.max_age = 0;
+
+        for (auto& line : set.lines)
+        {
+            line.tag = 0;
+            line.time = TIME_INVALID;
+            line.tid = 0;
+        }
     }
 }
 
@@ -24,7 +31,7 @@ SimpleLRUCache::SimpleLRUCache(const CacheConfig& config) : internals(config)
 SimpleLRUCache::SimpleLRUCache(unsigned int size, unsigned int associativity, unsigned int cache_line_size)
     : SimpleLRUCache(CacheConfig(size, associativity, cache_line_size)) {}
 
-bool SimpleLRUCache::access(addr_t address)
+bool SimpleLRUCache::access(addr_t address, unsigned tid)
 {
     //Do we need to align the address?
     const addr_t aligned_address = align_on_cache_line_size(address, internals.config.get_cache_line_size());
@@ -40,7 +47,7 @@ bool SimpleLRUCache::access(addr_t address)
     for (auto way = set.lines.begin(); way != set.lines.end(); ++way)
     {
         //Cache hit
-        if (way->tag == tag && way->time != TIME_INVALID)
+        if (way->tag == tag && way->time != TIME_INVALID && way->tid == tid)
         {
             way->time = ++set.max_age;
             return true;
@@ -59,6 +66,7 @@ bool SimpleLRUCache::access(addr_t address)
 
     victim->tag = tag;
     victim->time = ++set.max_age;
+    victim->tid = tid;
 
     return false;
 }

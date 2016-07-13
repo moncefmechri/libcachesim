@@ -10,6 +10,7 @@ struct LRUCacheLine
 {
     addr_t tag;
     age_t time;
+    unsigned tid;
 };
 
 struct LRUSet
@@ -35,7 +36,7 @@ public:
     SimpleLRUCache(const CacheConfig& config);
     SimpleLRUCache(unsigned size, unsigned associativity, unsigned cache_line_size);
 
-    bool access(addr_t address);
+    bool access(addr_t address, unsigned tid = 0);
 };
 
 //Given an LRU set, return the victim that will be chosen next for eviction
