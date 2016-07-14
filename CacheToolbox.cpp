@@ -84,3 +84,29 @@ addr_t get_tag(addr_t addr, const CacheConfig& config)
 {
     return get_tag(addr, config.get_tag_shift(), config.get_tag_size());
 }
+
+CacheStats::CacheStats(void)
+{
+    accesses = 0;
+    misses = 0;
+}
+
+void CacheStats::log_access(void)
+{
+    ++accesses;
+}
+
+void CacheStats::log_miss(void)
+{
+    ++misses;
+}
+
+uint64_t CacheStats::get_accesses(void)
+{
+    return accesses;
+}
+
+uint64_t CacheStats::get_misses(void)
+{
+    return misses;
+}

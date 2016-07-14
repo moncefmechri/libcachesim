@@ -73,4 +73,11 @@ class CacheStats
 {
     uint64_t accesses;
     uint64_t misses;
+public:
+    CacheStats(void);
+    void log_access(void);
+    void log_miss(void);
+
+    uint64_t get_accesses(void);
+    uint64_t get_misses(void);
 };
