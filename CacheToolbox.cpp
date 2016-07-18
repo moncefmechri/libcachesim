@@ -116,5 +116,5 @@ void print_cache_stats(const CacheStats& stats, std::ostream& os)
     const uint64_t accesses = stats.get_accesses();
     const uint64_t misses = stats.get_misses();
     os << "Accesses: " << accesses << std::endl;
-    os << "Misses: " << misses << " (Miss ratio: " << misses / (float) accesses * 100 << ')' << std::endl;
+    os << "Misses: " << misses << " (Miss ratio: " << misses / (float) accesses * 100 << "%)" << std::endl;
 }
