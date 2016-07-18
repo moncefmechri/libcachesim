@@ -81,3 +81,5 @@ public:
     uint64_t get_accesses(void) const;
     uint64_t get_misses(void) const;
 };
+
+void print_cache_stats(const CacheStats& stats, std::ostream& os=std::cout);
