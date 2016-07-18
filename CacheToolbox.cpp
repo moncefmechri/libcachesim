@@ -101,12 +101,12 @@ void CacheStats::log_miss(void)
     ++misses;
 }
 
-uint64_t CacheStats::get_accesses(void)
+uint64_t CacheStats::get_accesses(void) const
 {
     return accesses;
 }
 
-uint64_t CacheStats::get_misses(void)
+uint64_t CacheStats::get_misses(void) const
 {
     return misses;
 }

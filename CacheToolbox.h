@@ -78,6 +78,6 @@ public:
     void log_access(void);
     void log_miss(void);
 
-    uint64_t get_accesses(void);
-    uint64_t get_misses(void);
+    uint64_t get_accesses(void) const;
+    uint64_t get_misses(void) const;
 };
